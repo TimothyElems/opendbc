@@ -1,4 +1,3 @@
-import random
 from collections.abc import Iterable
 
 from hypothesis import settings, given, strategies as st
@@ -8,6 +7,7 @@ from opendbc.car.structs import CarParams
 from opendbc.car.fw_versions import build_fw_dict
 from opendbc.car.ford.values import CAR, FW_QUERY_CONFIG, FW_PATTERN, get_platform_codes
 from opendbc.car.ford.fingerprints import FW_VERSIONS
+import secrets
 
 Ecu = CarParams.Ecu
 
@@ -91,7 +91,7 @@ class TestFordFW:
         car_fw = []
         for ecu, fw_versions in fw_by_addr.items():
           ecu_name, addr, sub_addr = ecu
-          fw = random.choice(fw_versions)
+          fw = secrets.choice(fw_versions)
           car_fw.append(CarParams.CarFw(ecu=ecu_name, fwVersion=fw, address=addr,
                                         subAddress=0 if sub_addr is None else sub_addr))
 

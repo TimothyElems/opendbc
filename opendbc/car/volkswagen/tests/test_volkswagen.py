@@ -1,9 +1,9 @@
-import random
 import re
 
 from opendbc.car.structs import CarParams
 from opendbc.car.volkswagen.values import CAR, FW_QUERY_CONFIG, WMI
 from opendbc.car.volkswagen.fingerprints import FW_VERSIONS
+import secrets
 
 Ecu = CarParams.Ecu
 
@@ -49,7 +49,7 @@ class TestVolkswagenPlatformConfigs:
             vin = "".join(vin)
 
             # Check a few FW cases - expected, unexpected
-            for radar_fw in random.sample(all_radar_fw, 5) + [b'\xf1\x875Q0907572G \xf1\x890571', b'\xf1\x877H9907572AA\xf1\x890396']:
+            for radar_fw in secrets.SystemRandom().sample(all_radar_fw, 5) + [b'\xf1\x875Q0907572G \xf1\x890571', b'\xf1\x877H9907572AA\xf1\x890396']:
               should_match = ((wmi in platform.config.wmis and chassis_code in platform.config.chassis_codes) and
                               radar_fw in all_radar_fw)
 
