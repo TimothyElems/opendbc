@@ -1,5 +1,4 @@
 import pytest
-import random
 import time
 from collections import defaultdict
 from parameterized import parameterized
@@ -11,6 +10,7 @@ from opendbc.car.fingerprints import FW_VERSIONS
 from opendbc.car.fw_versions import ESSENTIAL_ECUS, FW_QUERY_CONFIGS, FUZZY_EXCLUDE_ECUS, VERSIONS, build_fw_dict, \
                                                 match_fw_to_car, get_brand_ecu_matches, get_fw_versions, get_present_ecus
 from opendbc.car.vin import get_vin
+import secrets
 
 CarFw = CarParams.CarFw
 Ecu = CarParams.Ecu
@@ -35,7 +35,7 @@ class TestFwFingerprint:
           continue
 
         ecu_name, addr, sub_addr = ecu
-        fw.append(CarFw(ecu=ecu_name, fwVersion=random.choice(fw_versions), brand=brand,
+        fw.append(CarFw(ecu=ecu_name, fwVersion=secrets.choice(fw_versions), brand=brand,
                         address=addr, subAddress=0 if sub_addr is None else sub_addr))
       CP.carFw = fw
       _, matches = match_fw_to_car(CP.carFw, CP.carVin, allow_fuzzy=False)
@@ -58,7 +58,7 @@ class TestFwFingerprint:
       fw = []
       for ecu, fw_versions in ecus.items():
         ecu_name, addr, sub_addr = ecu
-        fw.append(CarFw(ecu=ecu_name, fwVersion=random.choice(fw_versions), brand=brand,
+        fw.append(CarFw(ecu=ecu_name, fwVersion=secrets.choice(fw_versions), brand=brand,
                         address=addr, subAddress=0 if sub_addr is None else sub_addr))
       CP.carFw = fw
       _, matches = match_fw_to_car(CP.carFw, CP.carVin, allow_exact=False, log=False)
@@ -80,7 +80,7 @@ class TestFwFingerprint:
       ecu_name, addr, sub_addr = ecu
       for _ in range(5):
         # Add multiple FW versions to simulate ECU returning to multiple queries in a brand
-        fw.append(CarFw(ecu=ecu_name, fwVersion=random.choice(ecus[ecu]), brand=brand,
+        fw.append(CarFw(ecu=ecu_name, fwVersion=secrets.choice(ecus[ecu]), brand=brand,
                         address=addr, subAddress=0 if sub_addr is None else sub_addr))
       CP = CarParams(carFw=fw)
       _, matches = match_fw_to_car(CP.carFw, CP.carVin, allow_exact=False, log=False)
@@ -208,8 +208,8 @@ class TestFwFingerprintTiming:
 
   @staticmethod
   def fake_can_recv(wait_for_one: bool = False) -> list[list[CanData]]:
-    return ([[CanData(random.randint(0x600, 0x800), b'\x00' * 8, 0)]]
-            if random.uniform(0, 1) > 0.5 else [])
+    return ([[CanData(secrets.SystemRandom().randint(0x600, 0x800), b'\x00' * 8, 0)]]
+            if secrets.SystemRandom().uniform(0, 1) > 0.5 else [])
 
   def fake_set_obd_multiplexing(self, obd_multiplexing):
     """The 10Hz blocking params loop adds on average 50ms to the query time for each OBD multiplexing change"""

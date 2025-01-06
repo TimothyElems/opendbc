@@ -1,9 +1,9 @@
 import pytest
-import random
 
 from opendbc.can.parser import CANParser
 from opendbc.can.packer import CANPacker
 from opendbc.can.tests import TEST_DBC
+import secrets
 
 MAX_BAD_COUNTER = 5
 
@@ -33,7 +33,7 @@ class TestCanParserPacker:
 
     # setting COUNTER should override
     for _ in range(100):
-      cnt = random.randint(0, 255)
+      cnt = secrets.SystemRandom().randint(0, 255)
       msg = packer.make_can_msg("CAN_FD_MESSAGE", 0, {
         "COUNTER": cnt,
         "SIGNED": 0
@@ -148,8 +148,8 @@ class TestCanParserPacker:
           },
           "CAN_FD_MESSAGE": {
             "SIGNED": steer,
-            "64_BIT_LE": random.randint(0, 100),
-            "64_BIT_BE": random.randint(0, 100),
+            "64_BIT_LE": secrets.SystemRandom().randint(0, 100),
+            "64_BIT_BE": secrets.SystemRandom().randint(0, 100),
           },
         }
 
@@ -256,7 +256,7 @@ class TestCanParserPacker:
     idx = 0
     for _ in range(10):
       # Ensure CANParser holds the values of any duplicate messages over multiple frames
-      user_brake_vals = [random.randrange(100) for _ in range(random.randrange(5, 10))]
+      user_brake_vals = [secrets.SystemRandom().randrange(100) for _ in range(secrets.SystemRandom().randrange(5, 10))]
       half_idx = len(user_brake_vals) // 2
       can_msgs = [[], []]
       for frame, brake_vals in enumerate((user_brake_vals[:half_idx], user_brake_vals[half_idx:])):
